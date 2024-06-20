@@ -10,8 +10,12 @@ export class SchoolService {
     private readonly schoolRepository: Repository<School>,
   ) {}
 
-  findAll(): Promise<School[]> {
-    return this.schoolRepository.find();
+  async findAll(page: number, limit: number): Promise<{ schools: School[]; total: number }> {
+    const [schools, total] = await this.schoolRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    return { schools, total };
   }
 
   findOne(id: number): Promise<School> {

@@ -21,7 +21,7 @@ export class Teacher {
   @ManyToOne(() => School, school => school.teachers)
   school: School;
 
-  @ManyToMany(() => Subject)
+  @ManyToMany(() => Subject, subject => subject.teachers)
   @JoinTable({
     name: 'teachers_subject',
   })
