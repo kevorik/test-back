@@ -7,11 +7,13 @@ export class StudentController {
   constructor(private readonly studentService: StudentService) {}
 
   @Get()
-  async findAll(
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10,
-  ): Promise<Student[]> {
-    return this.studentService.findAll(page, limit);
+  findAll(
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+  ): Promise<{ students: Student[], total: number }> {
+    const pageNumber = parseInt(page, 10) || 1;
+    const limitNumber = parseInt(limit, 10) || 10;
+    return this.studentService.findAll(pageNumber, limitNumber);
   }
 
   @Get(':id')

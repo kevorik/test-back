@@ -8,10 +8,12 @@ export class ClassController {
 
   @Get()
   findAll(
-  @Query('page') page = 1,
-  @Query('limit') limit = 10,
-  ): Promise<Class[]> {
-    return this.classService.findAll(page, limit);
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+  ): Promise<{ classes: Class[], total: number }> {
+    const pageNumber = parseInt(page, 10) || 1;
+    const limitNumber = parseInt(limit, 10) || 10;
+    return this.classService.findAll(pageNumber, limitNumber);
   }
 
   @Get(':id')

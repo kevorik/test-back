@@ -10,16 +10,14 @@ export class StudentService {
     private readonly studentRepository: Repository<Student>,
   ) {}
 
-  async findAll(page: number = 1, limit: number = 10): Promise<Student[]> {
-    const skip = (page - 1) * limit;
-    const students = await this.studentRepository.find({
+  async findAll(page: number, limit: number, ): Promise<{ students: Student[]; total: number }> {
+    const [students, total] = await this.studentRepository.findAndCount({
       relations: ['class'],
-      skip,
+      skip: (page - 1) * limit,
       take: limit,
     });
-    return students;
+    return { students, total };
   }
-
   findOne(id: number): Promise<Student> {
     return this.studentRepository.findOneBy({ id });
   }
