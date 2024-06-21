@@ -10,17 +10,17 @@ export class SubjectService {
     private readonly subjectRepository: Repository<Subject>,
   ) {}
 
-  findAll(): Promise<Subject[]> {
-    return this.subjectRepository.find();
+  async findAll(page: number, limit: number): Promise<{ subjects: Subject[]; total: number }> {
+    const [subjects, total] = await this.subjectRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    return { subjects, total };
   }
 
   findOne(id: number): Promise<Subject> {
     return this.subjectRepository.findOneBy({ id });
   }
-
-  // create(subject: Subject): Promise<Subject> {
-  //   return this.subjectRepository.save(subject);
-  // }
   
   async create(subject: Subject): Promise<Subject> {
     const { name } = subject;

@@ -12,10 +12,15 @@ export class TeacherService {
     private readonly subjectRepository: Repository<Subject>,
   ) {}
 
-  findAll(): Promise<Teacher[]> {
-    return this.teacherRepository.find({ relations: ['school', 'subjects'] });
+  async findAll(page: number, limit: number): Promise<{ teachers: Teacher[]; total: number }> {
+    const [teachers, total] = await this.teacherRepository.findAndCount({
+      relations: ['school', 'subjects'] ,
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    return { teachers, total };
   }
-
+  // { relations: ['school', 'subjects'] }
   findOne(id: number): Promise<Teacher> {
     return this.teacherRepository.findOneBy({ id });
   }

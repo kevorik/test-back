@@ -18,7 +18,7 @@ export class Teacher {
   @Column({ nullable: true })
   middle_name: string;
 
-  @ManyToOne(() => School, school => school.teachers)
+  @ManyToOne(() => School, school => school.teachers, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   school: School;
 
   @ManyToMany(() => Subject, subject => subject.teachers)

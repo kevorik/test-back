@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Query } from '@nestjs/common';
 import { StudentService } from '../students/students.service';
 import { Student } from './student.entity';
 
@@ -7,8 +7,11 @@ export class StudentController {
   constructor(private readonly studentService: StudentService) {}
 
   @Get()
-  findAll(): Promise<Student[]> {
-    return this.studentService.findAll();
+  async findAll(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ): Promise<Student[]> {
+    return this.studentService.findAll(page, limit);
   }
 
   @Get(':id')

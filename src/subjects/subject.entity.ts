@@ -9,6 +9,6 @@ export class Subject {
   @Column({ unique: true })
   name: string;
 
-  @ManyToMany(() => Teacher, teacher => teacher.subjects)
+  @ManyToMany(() => Teacher, teacher => teacher.subjects, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   teachers: Teacher[];
 }

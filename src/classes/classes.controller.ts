@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Query } from '@nestjs/common';
 import { ClassService } from '../classes/classes.service';
 import { Class } from './class.entity';
 
@@ -7,8 +7,11 @@ export class ClassController {
   constructor(private readonly classService: ClassService) {}
 
   @Get()
-  findAll(): Promise<Class[]> {
-    return this.classService.findAll();
+  findAll(
+  @Query('page') page = 1,
+  @Query('limit') limit = 10,
+  ): Promise<Class[]> {
+    return this.classService.findAll(page, limit);
   }
 
   @Get(':id')

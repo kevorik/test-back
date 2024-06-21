@@ -10,8 +10,14 @@ export class StudentService {
     private readonly studentRepository: Repository<Student>,
   ) {}
 
-  findAll(): Promise<Student[]> {
-    return this.studentRepository.find({ relations: ['class'] });
+  async findAll(page: number = 1, limit: number = 10): Promise<Student[]> {
+    const skip = (page - 1) * limit;
+    const students = await this.studentRepository.find({
+      relations: ['class'],
+      skip,
+      take: limit,
+    });
+    return students;
   }
 
   findOne(id: number): Promise<Student> {

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Query } from '@nestjs/common';
 import { TeacherService } from '../teachers/teachers.service';
 import { Teacher } from './teacher.entity';
 
@@ -7,8 +7,13 @@ export class TeacherController {
   constructor(private readonly teacherService: TeacherService) {}
 
   @Get()
-  findAll(): Promise<Teacher[]> {
-    return this.teacherService.findAll();
+  findAll(
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+  ): Promise<{ teachers: Teacher[], total: number }> {
+    const pageNumber = parseInt(page, 10) || 1;
+    const limitNumber = parseInt(limit, 10) || 10;
+    return this.teacherService.findAll(pageNumber, limitNumber);
   }
 
   @Get(':id')

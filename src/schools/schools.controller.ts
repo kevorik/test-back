@@ -10,7 +10,7 @@ export class SchoolController {
   findAll(
     @Query('page') page: string,
     @Query('limit') limit: string,
-  ): Promise<{ schools: School[]; total: number }> {
+  ): Promise<{ schools: School[], total: number }> {
     const pageNumber = parseInt(page, 10) || 1;
     const limitNumber = parseInt(limit, 10) || 10;
     return this.schoolService.findAll(pageNumber, limitNumber);

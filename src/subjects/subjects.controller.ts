@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Query } from '@nestjs/common';
 import { SubjectService } from '../subjects/subjects.service';
 import { Subject } from './subject.entity';
 
@@ -7,8 +7,13 @@ export class SubjectController {
   constructor(private readonly subjectService: SubjectService) {}
 
   @Get()
-  findAll(): Promise<Subject[]> {
-    return this.subjectService.findAll();
+  findAll(
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+  ): Promise<{ subjects: Subject[], total: number }> {
+    const pageNumber = parseInt(page, 10) || 1;
+    const limitNumber = parseInt(limit, 10) || 10;
+    return this.subjectService.findAll(pageNumber, limitNumber);
   }
 
   @Get(':id')

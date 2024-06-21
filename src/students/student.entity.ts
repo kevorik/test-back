@@ -15,6 +15,6 @@ export class Student {
   @Column({ nullable: true })
   middle_name: string;
 
-  @ManyToOne(() => Class, classEntity => classEntity.students)
+  @ManyToOne(() => Class, classEntity => classEntity.students, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   class: Class;
 }

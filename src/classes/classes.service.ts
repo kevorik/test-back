@@ -10,9 +10,15 @@ export class ClassService {
     private readonly classRepository: Repository<Class>,
   ) {}
 
-  findAll(): Promise<Class[]> {
-    return this.classRepository.find({ relations: ['school', 'classTeacher', 'classPrefect', 'students'] });
-  }
+  async findAll(page: number = 1, limit: number = 10): Promise<Class[]> {
+      const skip = (page - 1) * limit;
+      const classes = await this.classRepository.find({
+        relations: ['school', 'classTeacher', 'classPrefect', 'students'],
+        skip,
+        take: limit,
+      });
+      return classes;
+    }
 
   findOne(id: number): Promise<Class> {
     return this.classRepository.findOneBy({ id });
