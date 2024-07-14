@@ -1,5 +1,7 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Query } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Query, UsePipes, ValidationPipe, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
 import { ClassService } from '../classes/classes.service';
+import { CreateClassDto } from './dto/create-class.dto';
+import { UpdateClassDto } from './dto/update-class.dto';
 import { Class } from './class.entity';
 
 @Controller('classes')
@@ -8,31 +10,34 @@ export class ClassController {
 
   @Get()
   findAll(
-    @Query('page') page: string,
-    @Query('limit') limit: string,
+  @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+  @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
   ): Promise<{ classes: Class[], total: number }> {
-    const pageNumber = parseInt(page, 10) || 1;
-    const limitNumber = parseInt(limit, 10) || 10;
-    return this.classService.findAll(pageNumber, limitNumber);
+    return this.classService.findAll(page, limit);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number): Promise<Class> {
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<Class> {
     return this.classService.findOne(id);
   }
 
   @Post()
-  create(@Body() classEntity: Class): Promise<Class> {
-    return this.classService.create(classEntity);
+  @UsePipes(new ValidationPipe({ transform: true }))
+  create(@Body() createClassDto: CreateClassDto): Promise<Class> {
+    return this.classService.create(createClassDto);
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() classEntity: Class): Promise<Class> {
-    return this.classService.update(id, classEntity);
+  @UsePipes(new ValidationPipe({ transform: true }))
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateClassDto: UpdateClassDto,
+  ): Promise<Class> {
+    return this.classService.update(id, updateClassDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number): Promise<void> {
+  remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.classService.remove(id);
   }
 }

@@ -1,6 +1,9 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Query } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Query, UsePipes, ValidationPipe, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
 import { SubjectService } from '../subjects/subjects.service';
+import { CreateSubjectDto } from './dto/create-subject.dto';
+import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { Subject } from './subject.entity';
+import { FindOneSubjectQuery } from './dto/find-one-subject-query.dto';
 
 @Controller('subjects')
 export class SubjectController {
@@ -8,31 +11,38 @@ export class SubjectController {
 
   @Get()
   findAll(
-    @Query('page') page: string,
-    @Query('limit') limit: string,
+  @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+  @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  @Query('sortColumn', new DefaultValuePipe('id')) sortColumn: string,
+  @Query('sortDirection', new DefaultValuePipe('asc')) sortDirection: 'asc' | 'desc',
   ): Promise<{ subjects: Subject[], total: number }> {
-    const pageNumber = parseInt(page, 10) || 1;
-    const limitNumber = parseInt(limit, 10) || 10;
-    return this.subjectService.findAll(pageNumber, limitNumber);
+  const sortDirectionParam = sortDirection === 'desc' ? 'DESC' : 'ASC';
+    return this.subjectService.findAll(page, limit, sortColumn, sortDirectionParam);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number): Promise<Subject> {
-    return this.subjectService.findOne(id);
+  findOne(@Param('id', ParseIntPipe) id: number, @Query() query: FindOneSubjectQuery): Promise<Subject> {
+    console.log(query);
+    return this.subjectService.findOne(id, query.fields);
   }
 
   @Post()
-  create(@Body() subject: Subject): Promise<Subject> {
-    return this.subjectService.create(subject);
+  @UsePipes(new ValidationPipe({ transform: true }))
+  create(@Body() createSubjectDto: CreateSubjectDto): Promise<Subject> {
+    return this.subjectService.create(createSubjectDto);
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() subject: Subject): Promise<Subject> {
-    return this.subjectService.update(id, subject);
+  @UsePipes(new ValidationPipe({ transform: true }))
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateSubjectDto: UpdateSubjectDto,
+  ): Promise<Subject> {
+    return this.subjectService.update(id, updateSubjectDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number): Promise<void> {
+  remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.subjectService.remove(id);
   }
 }

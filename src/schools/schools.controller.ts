@@ -1,6 +1,8 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Query } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Query, UsePipes, ValidationPipe, DefaultValuePipe, ParseIntPipe } from '@nestjs/common';
 import { SchoolService } from '../schools/schools.service';
 import { School } from './school.entity';
+import { CreateSchoolDto } from './dto/create-school.dto';
+import { UpdateSchoolDto } from './dto/update-school.dto';
 
 @Controller('schools')
 export class SchoolController {
@@ -8,12 +10,13 @@ export class SchoolController {
 
   @Get()
   findAll(
-    @Query('page') page: string,
-    @Query('limit') limit: string,
+  @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+  @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  @Query('sortColumn', new DefaultValuePipe('id')) sortColumn: string,
+  @Query('sortDirection', new DefaultValuePipe('asc')) sortDirection: 'asc' | 'desc',
   ): Promise<{ schools: School[], total: number }> {
-    const pageNumber = parseInt(page, 10) || 1;
-    const limitNumber = parseInt(limit, 10) || 10;
-    return this.schoolService.findAll(pageNumber, limitNumber);
+  const sortDirectionParam = sortDirection === 'desc' ? 'DESC' : 'ASC';
+    return this.schoolService.findAll(page, limit, sortColumn, sortDirectionParam);
   }
 
   @Get(':id')
@@ -22,13 +25,15 @@ export class SchoolController {
   }
 
   @Post()
-  create(@Body() school: School): Promise<School> {
-    return this.schoolService.create(school);
+  @UsePipes(new ValidationPipe({ transform: true }))
+  create(@Body() createSchoolDto: CreateSchoolDto): Promise<School> {
+    return this.schoolService.create(createSchoolDto);
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() school: School): Promise<School> {
-    return this.schoolService.update(id, school);
+  @UsePipes(new ValidationPipe({ transform: true }))
+  update(@Param('id') id: number, @Body() updateSchoolDto: UpdateSchoolDto): Promise<School> {
+    return this.schoolService.update(id, updateSchoolDto);
   }
 
   @Delete(':id')

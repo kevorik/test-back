@@ -1,5 +1,7 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Query } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Query, UsePipes, ValidationPipe, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
 import { StudentService } from '../students/students.service';
+import { CreateStudentDto } from './dto/create-student.dto';
+import { UpdateStudentDto } from './dto/update-student.dto';
 import { Student } from './student.entity';
 
 @Controller('students')
@@ -8,31 +10,37 @@ export class StudentController {
 
   @Get()
   findAll(
-    @Query('page') page: string,
-    @Query('limit') limit: string,
+  @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+  @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  @Query('sortColumn', new DefaultValuePipe('id')) sortColumn: string,
+  @Query('sortDirection', new DefaultValuePipe('asc')) sortDirection: 'asc' | 'desc',
   ): Promise<{ students: Student[], total: number }> {
-    const pageNumber = parseInt(page, 10) || 1;
-    const limitNumber = parseInt(limit, 10) || 10;
-    return this.studentService.findAll(pageNumber, limitNumber);
+  const sortDirectionParam = sortDirection === 'desc' ? 'DESC' : 'ASC';
+    return this.studentService.findAll(page, limit, sortColumn, sortDirectionParam);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number): Promise<Student> {
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<Student> {
     return this.studentService.findOne(id);
   }
 
   @Post()
-  create(@Body() student: Student): Promise<Student> {
-    return this.studentService.create(student);
+  @UsePipes(new ValidationPipe({ transform: true }))
+  create(@Body() createStudentDto: CreateStudentDto): Promise<Student> {
+    return this.studentService.create(createStudentDto);
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() student: Student): Promise<Student> {
-    return this.studentService.update(id, student);
+  @UsePipes(new ValidationPipe({ transform: true }))
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateStudentDto: UpdateStudentDto,
+  ): Promise<Student> {
+    return this.studentService.update(id, updateStudentDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number): Promise<void> {
+  remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.studentService.remove(id);
   }
 }
