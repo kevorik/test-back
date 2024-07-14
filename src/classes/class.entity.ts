@@ -11,13 +11,13 @@ export class Class {
   @Column()
   name: string;
 
-  @ManyToOne(() => School, school => school.classes, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @ManyToOne(() => School, school => school.classes, { onDelete: 'SET NULL', nullable: true, onUpdate: 'CASCADE' })
   school: School;
 
-  @ManyToOne(() => Teacher, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @ManyToOne(() => Teacher, { onDelete: 'SET NULL', nullable: true,  onUpdate: 'CASCADE' })
   classTeacher: Teacher;
 
-  @ManyToOne(() => Student, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @ManyToOne(() => Student, { onDelete: 'SET NULL', nullable: true, onUpdate: 'CASCADE' })
   classPrefect: Student;
 
   @OneToMany(() => Student, student => student.class)
