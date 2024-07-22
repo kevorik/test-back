@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsInt, Min, IsBoolean, IsOptional, IsDateString } from 'class-validator';
+import { IsNotEmpty, IsString, IsInt, Min, IsBoolean, IsOptional, IsDateString, IsArray, ArrayNotEmpty, ArrayUnique } from 'class-validator';
 
 export class CreateClassDto {
   @IsNotEmpty({ message: 'Class name should not be empty' })
@@ -24,4 +24,9 @@ export class CreateClassDto {
   @IsDateString()
   @IsOptional()
   foundedDate?: Date;
+
+  @IsArray()
+    @ArrayNotEmpty()
+    @ArrayUnique()
+    studentIds: number[];
 }

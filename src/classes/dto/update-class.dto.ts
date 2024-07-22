@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsInt, Min, IsOptional, IsBoolean, IsDateString } from 'class-validator';
+import { IsNotEmpty, IsString, IsInt, Min, IsOptional, IsBoolean, IsDateString, IsArray, ArrayUnique } from 'class-validator';
 
 export class UpdateClassDto {
   @IsOptional()
@@ -28,4 +28,9 @@ export class UpdateClassDto {
   @IsDateString()
   @IsOptional()
   foundedDate?: Date;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayUnique()
+  studentIds?: number[];
 }
