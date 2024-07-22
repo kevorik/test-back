@@ -106,3 +106,4 @@ export class ClassService {
     await this.classRepository.remove(classEntity);
   }
 }
+//a
